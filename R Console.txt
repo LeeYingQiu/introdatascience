@@ -1,0 +1,138 @@
+
+R version 4.1.2 (2021-11-01) -- "Bird Hippie"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[R.app GUI 1.77 (8007) aarch64-apple-darwin20]
+
+[History restored from /Users/cacing/.Rapp.history]
+
+
+> install.packages('selectr')
+--- Please select a CRAN mirror for use in this session ---
+trying URL 'https://mirrors.upm.edu.my/CRAN/bin/macosx/big-sur-arm64/contrib/4.1/selectr_0.4-2.tgz'
+Content type 'application/octet-stream' length 489013 bytes (477 KB)
+==================================================
+downloaded 477 KB
+
+
+The downloaded binary packages are in
+	/var/folders/xp/p7_gwgx56xd5p7xzz4j_l76h0000gn/T//RtmpmTBbF1/downloaded_packages
+> install.packages('xml2')
+trying URL 'https://mirrors.upm.edu.my/CRAN/bin/macosx/big-sur-arm64/contrib/4.1/xml2_1.3.2.tgz'
+Content type 'application/octet-stream' length 2462479 bytes (2.3 MB)
+==================================================
+downloaded 2.3 MB
+
+
+The downloaded binary packages are in
+	/var/folders/xp/p7_gwgx56xd5p7xzz4j_l76h0000gn/T//RtmpmTBbF1/downloaded_packages
+> install.packages('rvest')
+trying URL 'https://mirrors.upm.edu.my/CRAN/bin/macosx/big-sur-arm64/contrib/4.1/rvest_1.0.2.tgz'
+Content type 'application/octet-stream' length 199724 bytes (195 KB)
+==================================================
+downloaded 195 KB
+
+
+The downloaded binary packages are in
+	/var/folders/xp/p7_gwgx56xd5p7xzz4j_l76h0000gn/T//RtmpmTBbF1/downloaded_packages
+> install.packages('stringr')
+trying URL 'https://mirrors.upm.edu.my/CRAN/bin/macosx/big-sur-arm64/contrib/4.1/stringr_1.4.0.tgz'
+Content type 'application/octet-stream' length 211769 bytes (206 KB)
+==================================================
+downloaded 206 KB
+
+
+The downloaded binary packages are in
+	/var/folders/xp/p7_gwgx56xd5p7xzz4j_l76h0000gn/T//RtmpmTBbF1/downloaded_packages
+> install.packages('jsonlite')
+trying URL 'https://mirrors.upm.edu.my/CRAN/bin/macosx/big-sur-arm64/contrib/4.1/jsonlite_1.7.2.tgz'
+Content type 'application/octet-stream' length 509735 bytes (497 KB)
+==================================================
+downloaded 497 KB
+
+
+The downloaded binary packages are in
+	/var/folders/xp/p7_gwgx56xd5p7xzz4j_l76h0000gn/T//RtmpmTBbF1/downloaded_packages
+> library(xml2)
+> library(rvest)
+> library(stringr)
+# Webpage chosen : Lazada
+
+#Getting the product's title
+> title_html <- html_nodes(webpage,"h1.pdp-mod-product-badge-title")
+> head(title_html)
+{xml_nodeset (1)}
+[1] <h1 class="pdp-mod-product-badge-title">Apple MacBook Pro M1 Chip with 8 ...
+> title<-html_text(title_html)
+> head(title)
+[1] "Apple MacBook Pro M1 Chip with 8-Core CPU and 8-Core GPU 512GB"
+
+#Getting the product's promo price
+> price_html <- html_nodes(webpage,"span.pdp-price.pdp-price_type_normal.pdp-price_color_orange.pdp-price_size_xl")
+> head(price_html)
+{xml_nodeset (1)}
+[1] <span class=" pdp-price pdp-price_type_normal pdp-price_color_orange pdp ...
+> price<-html_text(price_html)
+> head(price)
+[1] "RM6,199.00"
+
+#Getting the product's original price
+> priceori_html <- html_nodes(webpage,"span.pdp-price.pdp-price_type_deleted.pdp-price_color_lightgray.pdp-price_size_xs")
+> priceori <- html_text(priceori_html)
+> head(priceori)
+[1] "RM6,399.00"
+
+#Getting the product's size and color
+> size_color_html<-html_nodes(webpage,"div.pdp-mod-product-info-section.sku-prop-selection")
+> size_color_html<-html_nodes(size_color_html,"span.sku-name")
+> size_color<-html_text(size_color_html)
+> head(size_color)
+[1] "512GB"  "Silver"
+> size_color[[1]]
+[1] "512GB"
+> size_color[[2]]
+[1] "Silver"
+
+#Getting the product's instalment details
+> instalment_html<-html_nodes(webpage,"p.item-content")
+> instalment<-html_text(instalment_html)
+> head(instalment)
+[1] "Up to 12 months, as low as RM516.58 per month."
+
+#Compiling into 1 data frame
+> size <-size_color[[1]]
+> head(size)
+[1] "512GB"
+> color <- size_color[[2]]
+> head(color)
+[1] "Silver"
+> prod_data<-data.frame(Title=title, PromoPrice=price, OriPrice=priceori, Size=size, Color=color, Instalment=instalment)
+> str(prod_data)
+'data.frame':	1 obs. of  6 variables:
+ $ Title     : chr "Apple MacBook Pro M1 Chip with 8-Core CPU and 8-Core GPU 512GB"
+ $ PromoPrice: chr "RM6,199.00"
+ $ OriPrice  : chr "RM6,399.00"
+ $ Size      : chr "512GB"
+ $ Color     : chr "Silver"
+ $ Instalment: chr "Up to 12 months, as low as RM516.58 per month."
+
+#Storing in JSON and printed out the output
+> library(jsonlite)
+> json_data<-toJSON(prod_data)
+> cat(json_data)
+[{"Title":"Apple MacBook Pro M1 Chip with 8-Core CPU and 8-Core GPU 512GB","PromoPrice":"RM6,199.00","OriPrice":"RM6,399.00","Size":"512GB","Color":"Silver","Instalment":"Up to 12 months, as low as RM516.58 per month."}]
